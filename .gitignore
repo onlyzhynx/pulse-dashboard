@@ -1,0 +1,34 @@
+
+node_modules
+dist
+node_modules/
+dist/
+.env.local
+.env.production
+.env
+*.log
+.DS_Store
+.vscode/
+*.zip
+casaos-package/
+deploy/
+data/
+.vite/
+
+# SQLite databases (live data must never travel with code)
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+
+# Local recovery artifacts — contain real financial data
+scripts/restore-*.sql
+scripts/*-backup.json
+
+# Machine-local Claude Code settings
+.claude/settings.local.json
+
+# Locally-installed agent skills (tooling, not app code)
+.agents/
+.claude/skills/
+skills-lock.json

@@ -1,0 +1,6 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Shell scripts must stay LF — they run on the Linux server from a
+# filesystem shared with a Windows machine; CRLF would break bash.
+*.sh text eol=lf

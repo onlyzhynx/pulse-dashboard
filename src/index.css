@@ -1,0 +1,303 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Theme Variables ─────────────────────────────────────────
+   Design language: NOIR — lights-out finance terminal.
+   Flat pure black, no glow. Separation by ELEVATION (subtle filled
+   surfaces) + hairline dividers — not outlines. Green is a RESERVED
+   signal: brand, primary actions, and money-positive only. Every
+   other hue lives in the categorical palette (utils/colors.js).
+*/
+
+:root {
+  --font: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-num: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+}
+
+/* ── DARK — pure black, elevation-based, reserved green ── */
+.theme-flow {
+  --bg: #000000;
+  --bg-card: #0e1211;            /* opaque surfaces that can't be translucent: dropdowns, modals, mobile nav, expanded panels */
+  --bg-hover: rgba(255, 255, 255, 0.055);
+  --surface: rgba(255, 255, 255, 0.045);       /* resting raised fill (tiles, inputs) — reads without an outline */
+  --surface-hover: rgba(255, 255, 255, 0.085);
+  --hairline: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.07);         /* alias — dividers only, never full boxes */
+  --border-bright: rgba(255, 255, 255, 0.16);
+  --text: #eef1ef;
+  --text-muted: #98a19b;        /* ~7.8:1 on black */
+  --text-dim: #7e867f;          /* ~5.6:1 on black — legible tertiary (was ~3.2:1) */
+  --positive: #3ecf8e;
+  --negative: #f4708a;
+  --negative-dim: rgba(244, 112, 138, 0.14);
+  --accent: #3ecf8e;
+  --accent-dim: rgba(62, 207, 142, 0.15);
+  --accent-soft: rgba(62, 207, 142, 0.08);
+  --accent-contrast: #04170d;   /* dark text on solid-green */
+  --chart-line: #3ecf8e;
+  --chart-fill: rgba(62, 207, 142, 0.16);
+  --chart-muted: rgba(62, 207, 142, 0.32);
+  --font: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-num: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --radius: 12px;
+  --shadow: 0 16px 50px rgba(0, 0, 0, 0.75);
+}
+
+/* ── LIGHT — warm paper, deep green reserve ── */
+.theme-light {
+  --bg: #f6f8f7;
+  --bg-card: #ffffff;
+  --bg-hover: rgba(14, 24, 19, 0.05);
+  --surface: rgba(14, 24, 19, 0.04);
+  --surface-hover: rgba(14, 24, 19, 0.08);
+  --hairline: rgba(14, 24, 19, 0.10);
+  --border: rgba(14, 24, 19, 0.10);
+  --border-bright: rgba(14, 24, 19, 0.22);
+  --text: #12201a;
+  --text-muted: #556059;
+  --text-dim: #7c867f;
+  --positive: #0c9f6e;
+  --negative: #d63a5c;
+  --negative-dim: rgba(214, 58, 92, 0.10);
+  --accent: #0c9f6e;
+  --accent-dim: rgba(12, 159, 110, 0.12);
+  --accent-soft: rgba(12, 159, 110, 0.07);
+  --accent-contrast: #ffffff;
+  --chart-line: #0c9f6e;
+  --chart-fill: rgba(12, 159, 110, 0.14);
+  --chart-muted: rgba(12, 159, 110, 0.30);
+  --font: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-num: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --radius: 12px;
+  --shadow: 0 12px 36px rgba(20, 40, 32, 0.12);
+}
+
+/* ─── Base ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.006em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Flat black — no radial glow (that read as generic AI gradient) */
+body.theme-flow { background: #000000; }
+body.theme-light { background: #f6f8f7; }
+
+::selection { background: rgba(62, 207, 142, 0.26); }
+
+/* ─── Boxless widget chrome ───────────────────────────────── */
+.widget-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.widget-header {
+  padding: 14px 6px 4px;
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.widget-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.widget-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.widget-body {
+  flex: 1;
+  padding: 10px 6px 18px;
+  overflow: auto;
+  min-height: 0;
+}
+
+/* Elevation tile: a filled surface, NOT an outline. Groups content
+   the way X groups without boxing it in. */
+.kpi-tile {
+  background: var(--surface);
+  border: none;
+  border-radius: 16px;
+}
+
+/* ─── Buttons: X-style, borderless ────────────────────────── */
+/* Ghost: transparent until hover — no resting outline anywhere */
+.btn-ghost {
+  background: transparent;
+  border: none;
+  border-radius: 9999px;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 5px 12px;
+  cursor: pointer;
+  letter-spacing: 0;
+  transition: color 0.12s, background 0.12s;
+  white-space: nowrap;
+}
+.btn-ghost:hover { color: var(--text); background: var(--surface-hover); }
+
+/* Active toggle: soft green fill + green text */
+.btn-active {
+  background: var(--accent-dim);
+  border: none;
+  border-radius: 9999px;
+  color: var(--accent);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  cursor: pointer;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* Primary: solid green, dark text */
+.btn-primary {
+  background: var(--accent);
+  border: none;
+  border-radius: 9999px;
+  color: var(--accent-contrast);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 9px 16px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: filter 0.12s;
+}
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; filter: none; }
+
+/* ─── Keyboard focus ──────────────────────────────────────── */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ─── Reduced motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ─── Ticker price flash ──────────────────────────────────── */
+@keyframes flash-up {
+  0%   { background: rgba(62, 207, 142, 0.16); }
+  100% { background: transparent; }
+}
+@keyframes flash-down {
+  0%   { background: rgba(244, 112, 138, 0.14); }
+  100% { background: transparent; }
+}
+.flash-up   { animation: flash-up   0.6s ease-out; }
+.flash-down { animation: flash-down 0.6s ease-out; }
+
+/* ─── Live pulse dot (logo) ───────────────────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(62, 207, 142, 0.4); }
+  50%      { opacity: 0.72; box-shadow: 0 0 0 5px rgba(62, 207, 142, 0); }
+}
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse-dot 2.4s ease-in-out infinite;
+}
+
+/* ─── Form inputs — filled surface, hairline, green focus ─── */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="password"],
+input[type="search"],
+select,
+textarea {
+  background: var(--surface);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.12s, background 0.12s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+input[type="text"]:hover,
+input[type="number"]:hover,
+input[type="date"]:hover,
+input[type="password"]:hover,
+input[type="search"]:hover,
+select:hover,
+textarea:hover { background: var(--surface-hover); }
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  background: var(--surface-hover);
+}
+input::placeholder { color: var(--text-dim); }
+select option { background: var(--bg-card); color: var(--text); }
+
+/* ─── Alternating rows ────────────────────────────────────── */
+.alt-rows > *:nth-child(even) { background: rgba(255, 255, 255, 0.018); }
+.theme-light .alt-rows > *:nth-child(even) { background: rgba(20, 32, 26, 0.03); }
+
+/* ─── Privacy blur ────────────────────────────────────────── */
+.blur-value { transition: filter 0.2s, opacity 0.2s; }
+body.values-blurred .blur-value {
+  filter: blur(7px);
+  user-select: none;
+  opacity: 0.7;
+}
+
+/* ─── Login ───────────────────────────────────────────────── */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}

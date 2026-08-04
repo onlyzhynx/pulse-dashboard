@@ -1,0 +1,62 @@
+services:
+  pulse:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pulse
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8787}:8787"
+    volumes:
+      - pulse_data:/app/data
+    environment:
+      NODE_ENV: production
+      PORT: 8787
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:-changeme}
+      SESSION_SECRET: ${SESSION_SECRET:-}
+      HELIUS_API_KEY: ${HELIUS_API_KEY:-}
+      JUPITER_API_KEY: ${JUPITER_API_KEY:-}
+      PULSE_API_TOKEN: ${PULSE_API_TOKEN:-}
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8787/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  pulse-backup:
+    image: alpine:latest
+    container_name: pulse-backup
+    restart: unless-stopped
+    volumes:
+      # rw, not :ro — the app runs the DB in WAL mode, and a WAL reader must
+      # take shared-memory read locks (writes to pulse.db-shm), which is
+      # impossible on a read-only mount. A plain `cp pulse.db` here silently
+      # missed everything still in the WAL (weeks of transactions).
+      - pulse_data:/data
+      - pulse_backups:/backups
+    command: >
+      sh -c "
+      apk add -q --no-cache sqlite;
+      while true; do
+        FILE=/backups/pulse-$$(date +%Y%m%d-%H%M%S).db;
+        if sqlite3 /data/pulse.db \"VACUUM INTO '$$FILE'\" &&
+           [ \"$$(sqlite3 $$FILE 'PRAGMA integrity_check;')\" = ok ]; then
+          echo \"Backup OK: $$(basename $$FILE) ($$(wc -c < $$FILE) bytes)\";
+        else
+          echo \"Backup FAILED for $$FILE — removing\"; rm -f $$FILE;
+        fi;
+        find /backups -name 'pulse-*.db' -mtime +30 -delete;
+        sleep 86400;
+      done
+      "
+    depends_on:
+      pulse:
+        condition: service_healthy
+
+volumes:
+  pulse_data:
+  pulse_backups:
