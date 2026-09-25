@@ -25,12 +25,19 @@ export default function LoginScreen() {
       }}>
         {/* Logo / Title */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <img
+            src="/pulse-mark-light.svg"
+            alt="Pulse"
+            width="76"
+            height="76"
+            style={{ display: 'block', margin: '0 auto 14px' }}
+          />
           <div style={{
             fontFamily: 'var(--font)',
             fontSize: '2rem',
             fontWeight: 700,
-            letterSpacing: '0.3em',
-            color: 'var(--accent)',
+            letterSpacing: '0.2em',
+            color: 'var(--text)',
             marginBottom: '8px',
           }}>PULSE</div>
           <div style={{
@@ -39,7 +46,7 @@ export default function LoginScreen() {
             letterSpacing: '0.2em',
             color: 'var(--text-dim)',
             textTransform: 'uppercase',
-          }}>NET WORTH TERMINAL</div>
+          }}>YOUR FINANCIAL PULSE</div>
         </div>
 
         {/* Form */}
