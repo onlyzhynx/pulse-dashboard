@@ -74,14 +74,21 @@ export default function TopBar({ tabs, activeTab, onSwitchTab }) {
         gap: '12px',
       }}>
 
-        {/* ── Left: logo + live dot ── */}
+        {/* ── Left: Pulse brand ── */}
         <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="pulse-dot" />
+          <img
+            src={theme === 'light' ? '/pulse-mark-dark.svg' : '/pulse-mark-light.svg'}
+            alt=""
+            aria-hidden="true"
+            width="28"
+            height="28"
+            style={{ display: 'block' }}
+          />
           <div style={{
             fontFamily: 'var(--font)',
             fontSize: '16px',
             fontWeight: 800,
-            letterSpacing: '0.26em',
+            letterSpacing: '0.16em',
             color: 'var(--text)',
             userSelect: 'none',
           }}>
